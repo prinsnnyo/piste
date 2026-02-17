@@ -92,3 +92,8 @@ body {
 .muted-text {
   color: var(--brand-mid);
 }
+
+/* Static glow for message circles - no animation */
+.message-glow {
+  filter: drop-shadow(0 0 12px rgba(255, 255, 255, 0.9)) drop-shadow(0 0 20px rgba(145, 145, 145, 0.7));
+}
