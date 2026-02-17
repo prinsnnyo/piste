@@ -1,93 +1,50 @@
-'use client'
-import { useState, useEffect, useCallback } from 'react'
-import dynamic from 'next/dynamic'
-import { Message, LatLngTuple } from '@/lib/types'
-import { fetchMessages, postMessage } from '@/lib/api'
-import { PageHeader } from '@/components/PageHeader'
-import { MessageFormModal } from '@/components/MessageFormModal'
+import Link from 'next/link'
+import Image from 'next/image'
 
-// Dynamic import to avoid SSR issues with Leaflet
-const MapView = dynamic(
-  () => import('@/components/MapView').then((mod) => mod.MapView),
-  { ssr: false }
-)
-
-export default function FreedomWall() {
-  const [center, setCenter] = useState<LatLngTuple>([8.475, 124.646]) // Cagayan de Oro
-  const [messages, setMessages] = useState<Message[]>([])
-  const [showForm, setShowForm] = useState(false)
-  const [newMessage, setNewMessage] = useState('')
-  const [isSubmitting, setIsSubmitting] = useState(false)
-
-  // Leaflet setup - configure icons on client side only
-  useEffect(() => {
-    if (typeof window === 'undefined') return
-
-    ;(async () => {
-      try {
-        const L = await import('leaflet')
-        delete (L.Icon.Default.prototype as unknown as Record<string, unknown>)._getIconUrl
-        L.Icon.Default.mergeOptions({
-          iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
-          iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
-          shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
-        })
-      } catch {
-        // Ignore Leaflet initialization errors
-      }
-    })()
-  }, [])
-
-  // Load initial messages
-  useEffect(() => {
-    fetchMessages(center[0], center[1], 5000).then(setMessages)
-  }, [])
-
-  const handleLocationClick = useCallback((position: LatLngTuple) => {
-    setCenter(position)
-    setShowForm(true)
-  }, [])
-
-  const handleMapMove = useCallback((mapCenter: LatLngTuple, radius: number) => {
-    fetchMessages(mapCenter[0], mapCenter[1], radius).then(setMessages)
-  }, [])
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!newMessage.trim()) return
-
-    setIsSubmitting(true)
-    const success = await postMessage(newMessage, center[0], center[1])
-    
-    if (success) {
-      setNewMessage('')
-      setShowForm(false)
-      const updatedMessages = await fetchMessages(center[0], center[1], 5000)
-      setMessages(updatedMessages)
-    }
-    
-    setIsSubmitting(false)
-  }
-
+export default function LandingPage() {
   return (
-    <main className="min-h-screen app-bg">
-      <PageHeader />
-      
-      <MapView
-        center={center}
-        messages={messages}
-        onLocationClick={handleLocationClick}
-        onMapMove={handleMapMove}
+    <main className="min-h-screen relative flex items-center justify-center px-4 overflow-hidden">
+      {/* Background Image */}
+      <Image
+        src="/landingpageBG.jpg"
+        alt="Background"
+        fill
+        className="object-cover z-0"
+        priority
       />
 
-      <MessageFormModal
-        show={showForm}
-        message={newMessage}
-        onMessageChange={setNewMessage}
-        onClose={() => setShowForm(false)}
-        onSubmit={handleSubmit}
-        isSubmitting={isSubmitting}
-      />
+      {/* Content */}
+      <div className="relative z-20 max-w-4xl mx-auto text-center">
+        {/* Brand Title */}
+        <h1 className="text-6xl md:text-7xl font-bold mb-8 brand-gradient-text">
+          The Unsaid Thoughts
+        </h1>
+
+        {/* Quote */}
+        <blockquote className="mb-12 space-y-4">
+          <p className="text-2xl md:text-3xl font-light text-[#919191] italic leading-relaxed">
+            &ldquo;Sometimes the words we cannot speak aloud
+            <br />
+            find their voice in the silence of anonymity.&rdquo;
+          </p>
+          <p className="text-lg muted-text">
+            — Unknown
+          </p>
+        </blockquote>
+
+        {/* Call to Action */}
+        <Link
+          href="/wall"
+          className="inline-block brand-button px-12 py-4 rounded-xl font-semibold text-lg text-white shadow-2xl hover:shadow-[#919191]/20 transition-all duration-300 hover:scale-105"
+        >
+          Enter the Wall
+        </Link>
+
+        {/* Subtitle */}
+        <p className="mt-8 muted-text text-sm">
+          Share your thoughts anonymously on the map
+        </p>
+      </div>
     </main>
   )
 }
