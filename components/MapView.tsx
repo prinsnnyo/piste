@@ -22,6 +22,8 @@ export function MapView({
       center={center}
       zoom={13}
       scrollWheelZoom={true}
+      minZoom={6}
+      maxZoom={100}
       className="w-full h-screen"
     >
       <TileLayer
