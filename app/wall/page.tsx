@@ -40,7 +40,11 @@ export default function FreedomWall() {
 
   // Load initial messages
   useEffect(() => {
-    fetchMessages(center[0], center[1], 5000).then(setMessages)
+    console.log('[page] Initial load - fetching messages at', center)
+    fetchMessages(center[0], center[1], 10000).then((msgs) => {
+      console.log('[page] Initial load - received', msgs.length, 'messages:', msgs)
+      setMessages(msgs)
+    })
   }, [])
 
   const handleLocationClick = useCallback((position: LatLngTuple) => {
@@ -49,7 +53,13 @@ export default function FreedomWall() {
   }, [])
 
   const handleMapMove = useCallback((mapCenter: LatLngTuple, radius: number) => {
-    fetchMessages(mapCenter[0], mapCenter[1], radius).then(setMessages)
+    // Use minimum radius of 10km to ensure markers stay visible when zoomed out
+    const fetchRadius = Math.max(radius, 10000)
+    console.log('[page] Map moved - fetching messages at', mapCenter, 'radius:', fetchRadius)
+    fetchMessages(mapCenter[0], mapCenter[1], fetchRadius).then((msgs) => {
+      console.log('[page] Map move - received', msgs.length, 'messages')
+      setMessages(msgs)
+    })
   }, [])
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -57,21 +67,29 @@ export default function FreedomWall() {
     if (!newMessage.trim()) return
 
     setIsSubmitting(true)
-    const success = await postMessage(newMessage, center[0], center[1])
-    
-    if (success) {
+    const created = await postMessage(newMessage, center[0], center[1])
+    console.debug('[page] postMessage created:', created)
+
+    if (created) {
+      // Immediately add the created message to UI for instant feedback
+      setMessages((prev) => [created, ...prev])
       setNewMessage('')
       setShowForm(false)
-      const updatedMessages = await fetchMessages(center[0], center[1], 5000)
-      setMessages(updatedMessages)
+      // Refresh in background to sync server state with larger radius
+      fetchMessages(center[0], center[1], 10000).then(setMessages)
     }
-    
+
     setIsSubmitting(false)
   }
 
   return (
     <main className="min-h-screen app-bg">
       <PageHeader />
+      
+      {/* Debug info */}
+      <div className="fixed top-20 left-4 z-[2000] bg-black/80 text-white p-2 rounded text-xs">
+        Messages loaded: {messages.length}
+      </div>
       
       <MapView
         center={center}
