@@ -19,11 +19,12 @@ export function MapView({
 }: MapViewProps) {
   return (
     <MapContainer
+      key="freedom-wall-map"
       center={center}
       zoom={13}
       scrollWheelZoom={true}
       minZoom={6}
-      maxZoom={100}
+      maxZoom={18}
       className="w-full h-screen"
     >
       <TileLayer
