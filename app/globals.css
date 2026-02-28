@@ -3,9 +3,6 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
-}
-
-@theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
@@ -112,4 +109,27 @@ body {
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
+}
+
+.custom-dark-popup .leaflet-popup-content-wrapper {
+  background: transparent !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}
+
+.custom-dark-popup .leaflet-popup-tip-container {
+  display: none !important;
+}
+
+.custom-dark-popup .leaflet-popup-content {
+  margin: 0 !important;
+  width: auto !important;
+  line-height: normal !important;
+}
+.custom-dark-popup .leaflet-popup-content::-webkit-scrollbar {
+  width: 4px;
+}
+.custom-dark-popup .leaflet-popup-content::-webkit-scrollbar-thumb {
+  background: #494949;
+  border-radius: 4px;
 }
