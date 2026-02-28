@@ -72,7 +72,7 @@ export function LocationSearch({ onLocationSelected }: LocationSearchProps) {
   const handleSelectLocation = (result: SearchResult) => {
     const position: LatLngTuple = [parseFloat(result.lat), parseFloat(result.lon)]
     onLocationSelected(position)
-    setQuery(result.display_name)
+    setQuery('')
     setIsOpen(false)
     setResults([])
   }
@@ -84,7 +84,7 @@ export function LocationSearch({ onLocationSelected }: LocationSearchProps) {
     >
       {/* Search Input */}
       <div className="relative">
-        <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
+        <div className="absolute left-3 top-1/2 transform -translate-y-1/2 brand-accent">
           <svg
             className="w-5 h-5"
             fill="none"
@@ -104,13 +104,13 @@ export function LocationSearch({ onLocationSelected }: LocationSearchProps) {
           value={query}
           onChange={handleInputChange}
           placeholder="Search locations..."
-          className="w-full pl-12 pr-4 py-3 bg-white/50 text-gray-900 backdrop-blur-lg border border-gray-200 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent text-sm"
+          className="w-full pl-12 pr-4 py-3 card-bg card-border text-[color:var(--color-foreground)] rounded-lg shadow-md focus:outline-none focus-ring text-sm"
           onFocus={() => results.length > 0 && setIsOpen(true)}
         />
         {isLoading && (
           <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
             <div className="animate-spin">
-              <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-5 h-5 brand-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -125,17 +125,17 @@ export function LocationSearch({ onLocationSelected }: LocationSearchProps) {
 
       {/* Results Dropdown */}
       {isOpen && results.length > 0 && (
-        <div className="absolute top-full left-0 right-0 mt-1 bg-white/90 backdrop-blur-sm border border-gray-500 rounded-lg shadow-lg max-h-100 overflow-y-auto">
+        <div className="absolute top-full left-0 right-0 mt-1 card-bg card-border rounded-lg shadow-lg max-h-100 overflow-y-auto">
           {results.map((result, index) => (
             <button
               key={index}
               onClick={() => handleSelectLocation(result)}
-              className="w-full px-4 py-3 text-left hover:bg-gray-100 border-b last:border-b-0 text-sm transition-colors"
+              className="w-full px-4 py-3 text-left hover:app-bg border-b last:border-b-0 text-sm transition-colors"
             >
-              <div className="font-medium text-gray-900 truncate">
+              <div className="font-medium text-[color:var(--color-foreground)] truncate">
                 {result.display_name.split(',')[0]}
               </div>
-              <div className="text-xs text-gray-500 truncate mt-1">
+              <div className="text-xs muted-text truncate mt-1">
                 {result.display_name}
               </div>
             </button>
@@ -145,7 +145,7 @@ export function LocationSearch({ onLocationSelected }: LocationSearchProps) {
 
       {/* No Results Message */}
       {isOpen && query && results.length === 0 && !isLoading && (
-        <div className="absolute top-full left-0 right-0 mt-1 bg-white/90 backdrop-blur-sm border border-gray-300 rounded-lg shadow-lg p-4 text-center text-sm text-gray-600">
+        <div className="absolute top-full left-0 right-0 mt-1 card-bg card-border rounded-lg shadow-lg p-4 text-center text-sm muted-text">
           No locations found
         </div>
       )}
