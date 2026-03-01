@@ -13,7 +13,7 @@ const MapView = dynamic(
 )
 
 export default function FreedomWall() {
-  const [center, setCenter] = useState<LatLngTuple>([8.475, 124.646]) // Cagayan de Oro
+  const [center, setCenter] = useState<LatLngTuple>([8.475, 124.646]) // Cagayan de Oro you can change this via map coordinates
   const [messages, setMessages] = useState<Message[]>([])
   const [showForm, setShowForm] = useState(false)
   const [newMessage, setNewMessage] = useState('')
@@ -87,9 +87,9 @@ export default function FreedomWall() {
       <PageHeader />
       
       {/* Debug info */}
-      <div className="fixed top-20 left-4 z-[2000] bg-black/80 text-white p-2 rounded text-xs">
+      {/* <div className="fixed top-20 left-4 z-[2000] bg-black/80 text-white p-2 rounded text-xs">
         Messages loaded: {messages.length}
-      </div>
+      </div> */}
       
       <MapView
         center={center}
