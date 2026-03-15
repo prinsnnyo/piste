@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "SULYAP",
+  title: "Usad",
   description: "Every unheard thoughts matters",
 };
 
