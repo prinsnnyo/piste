@@ -15,6 +15,12 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Usad",
   description: "Every unheard thoughts matters",
+  icons: {
+    icon: "/assets/icon.png",
+  },
+  openGraph: {
+    images: ["/assets/landingpageBG.jpg"],
+  },
 };
 
 export default function RootLayout({
