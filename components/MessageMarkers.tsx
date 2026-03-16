@@ -19,13 +19,10 @@ interface MessageMarkersProps {
 }
 
 export function MessageMarkers({ messages }: MessageMarkersProps) {
-  console.debug('[MessageMarkers] Rendering', messages.length, 'messages')
-  
   return (
     <>
       {messages.map((msg) => {
         const position = getMessagePosition(msg)
-        console.debug('[MessageMarkers] Message', msg.id, 'at position', position)
 
         return (
           <Fragment key={msg.id}>
