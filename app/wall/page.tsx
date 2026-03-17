@@ -87,7 +87,7 @@ export default function FreedomWall() {
       <PageHeader />
       
       {/* Debug info */}
-      <div className="fixed top-20 left-4 z-[2000] bg-black/80 text-white p-2 rounded text-xs">
+      <div className="fixed top-25 left-4 z-[2000] bg-black/80 text-white p-2 rounded text-xs">
         Messages loaded: {messages.length}
       </div>
       

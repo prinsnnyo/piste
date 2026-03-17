@@ -5,7 +5,7 @@ export function PageHeader() {
         <h1 className="text-5xl font-bold mb-2 brand-gradient-text">
           Freedom Wall
         </h1>
-        <p className="muted-text">
+        <p className="muted-text text-sm">
           Say what you feel. Click anywhere on the map to post anonymously.
         </p>
       </div>
