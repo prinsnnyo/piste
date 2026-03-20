@@ -26,6 +26,7 @@ export function MapView({
       minZoom={6}
       maxZoom={18}
       className="w-full h-screen"
+      attributionControl={false}
     >
       <TileLayer
         attribution='&copy; <a href="https://carto.com/">CARTO</a>'

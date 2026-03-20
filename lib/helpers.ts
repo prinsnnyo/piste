@@ -7,12 +7,6 @@ import { Message, LatLngTuple } from './types'
  * - Direct lat/lng properties
  */
 export function getMessagePosition(message: Message): LatLngTuple {
-  console.log('[getMessagePosition] Parsing message', message.id, ':', {
-    location: message.location,
-    lat: message.lat,
-    lng: message.lng
-  })
-  
   // Try GeoJSON format
   if (
     message.location &&
@@ -21,7 +15,6 @@ export function getMessagePosition(message: Message): LatLngTuple {
     Array.isArray(message.location.coordinates)
   ) {
     const [lng, lat] = message.location.coordinates
-    console.log('[getMessagePosition] GeoJSON format ->', [lat, lng])
     return [lat, lng]
   }
 
@@ -29,20 +22,16 @@ export function getMessagePosition(message: Message): LatLngTuple {
   if (message.location && typeof message.location === 'string') {
     const match = message.location.match(/POINT\(([^ ]+) ([^ )]+)\)/)
     if (match) {
-      const result: LatLngTuple = [parseFloat(match[2]), parseFloat(match[1])]
-      console.log('[getMessagePosition] WKT format ->', result)
-      return result
+      return [parseFloat(match[2]), parseFloat(match[1])]
     }
   }
 
   // Fallback to direct lat/lng properties
   if (message.lat != null && message.lng != null) {
-    console.log('[getMessagePosition] Direct lat/lng ->', [message.lat, message.lng])
     return [message.lat, message.lng]
   }
 
-  // Default fallback (should not happen)
-  console.warn('[getMessagePosition] No valid location found! Returning [0,0]')
+  // Default fallback (should not happen in normal usage)
   return [0, 0]
 }
 

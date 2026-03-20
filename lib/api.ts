@@ -7,19 +7,13 @@ export async function fetchMessages(
 ): Promise<Message[]> {
   try {
     const url = `/api/messages?lat=${lat}&lng=${lng}&radius=${radius}`
-    console.debug('[lib/api] Fetching from:', url)
     const res = await fetch(url)
-    
-    if (!res.ok) {
-      console.error('[lib/api] Fetch failed with status:', res.status)
-      return []
-    }
-    
+
+    if (!res.ok) return []
+
     const data = await res.json()
-    console.debug('[lib/api] Received', Array.isArray(data) ? data.length : 0, 'messages')
     return Array.isArray(data) ? data : []
-  } catch (error) {
-    console.error('[lib/api] Failed to fetch messages:', error)
+  } catch {
     return []
   }
 }
@@ -38,18 +32,16 @@ export async function postMessage(
 
     if (!res.ok) return null
     const data = await res.json()
-    console.debug('[lib/api] postMessage response:', data)
-    
+
     // Ensure the returned message has explicit lat/lng for immediate rendering
     const message: Message = {
       ...data,
       lat: lat,
       lng: lng
     }
-    
+
     return message
-  } catch (error) {
-    console.error('Post failed:', error)
+  } catch {
     return null
   }
 }
