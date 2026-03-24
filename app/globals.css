@@ -133,3 +133,8 @@ body {
   background: #494949;
   border-radius: 4px;
 }
+
+/* Hide the default Leaflet close button since we have a custom one */
+.leaflet-popup-close-button {
+  display: none !important;
+}

@@ -45,3 +45,39 @@ export async function postMessage(
     return null
   }
 }
+
+export async function listenToMessage(id: string): Promise<boolean> {
+  try {
+    const res = await fetch(`/api/messages/${id}/listen`, {
+      method: 'POST'
+    })
+    return res.ok
+  } catch {
+    return false
+  }
+}
+
+export async function fetchReplies(messageId: string): Promise<any[]> {
+  try {
+    const res = await fetch(`/api/messages/${messageId}/replies`)
+    if (!res.ok) return []
+    return await res.json()
+  } catch {
+    return []
+  }
+}
+
+export async function postReply(messageId: string, content: string): Promise<any | null> {
+  try {
+    const res = await fetch(`/api/messages/${messageId}/replies`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ content })
+    })
+    
+    if (!res.ok) return null
+    return await res.json()
+  } catch {
+    return null
+  }
+}
