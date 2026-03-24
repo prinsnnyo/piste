@@ -47,9 +47,17 @@ export default function FreedomWall() {
     })
   }, [])
 
+
+  // Map click: move center and open form
   const handleLocationClick = useCallback((position: LatLngTuple) => {
     setCenter(position)
     setShowForm(true)
+  }, [])
+
+  // Search: only move center
+  const handleLocationSearch = useCallback((position: LatLngTuple) => {
+    setCenter(position)
+    // Do NOT open form
   }, [])
 
   const handleMapMove = useCallback((mapCenter: LatLngTuple, radius: number) => {
@@ -95,6 +103,7 @@ export default function FreedomWall() {
         center={center}
         messages={messages}
         onLocationClick={handleLocationClick}
+        onLocationSearch={handleLocationSearch}
         onMapMove={handleMapMove}
       />
 

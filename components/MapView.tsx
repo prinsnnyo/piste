@@ -10,7 +10,7 @@ interface MapViewProps {
   center: LatLngTuple;
   messages: Message[];
   onLocationClick: (position: LatLngTuple) => void;
-  onLocationSearch?: (position: LatLngTuple) => void;
+  onLocationSearch: (position: LatLngTuple) => void;
   onMapMove: (center: LatLngTuple, radius: number) => void;
 }
 
@@ -57,7 +57,7 @@ export function MapView({
         />
         <MessageMarkers messages={messages} />
       </MapContainer>
-      <LocationSearch onLocationSelected={onLocationSearch || onLocationClick} />
+      <LocationSearch onLocationSelected={onLocationSearch} />
     </div>
   );
 }
