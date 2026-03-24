@@ -7,19 +7,13 @@ export async function fetchMessages(
 ): Promise<Message[]> {
   try {
     const url = `/api/messages?lat=${lat}&lng=${lng}&radius=${radius}`
-    console.debug('[lib/api] Fetching from:', url)
     const res = await fetch(url)
-    
-    if (!res.ok) {
-      console.error('[lib/api] Fetch failed with status:', res.status)
-      return []
-    }
-    
+
+    if (!res.ok) return []
+
     const data = await res.json()
-    console.debug('[lib/api] Received', Array.isArray(data) ? data.length : 0, 'messages')
     return Array.isArray(data) ? data : []
-  } catch (error) {
-    console.error('[lib/api] Failed to fetch messages:', error)
+  } catch {
     return []
   }
 }
@@ -38,18 +32,52 @@ export async function postMessage(
 
     if (!res.ok) return null
     const data = await res.json()
-    console.debug('[lib/api] postMessage response:', data)
-    
+
     // Ensure the returned message has explicit lat/lng for immediate rendering
     const message: Message = {
       ...data,
       lat: lat,
       lng: lng
     }
-    
+
     return message
-  } catch (error) {
-    console.error('Post failed:', error)
+  } catch {
+    return null
+  }
+}
+
+export async function listenToMessage(id: string): Promise<boolean> {
+  try {
+    const res = await fetch(`/api/messages/${id}/listen`, {
+      method: 'POST'
+    })
+    return res.ok
+  } catch {
+    return false
+  }
+}
+
+export async function fetchReplies(messageId: string): Promise<any[]> {
+  try {
+    const res = await fetch(`/api/messages/${messageId}/replies`)
+    if (!res.ok) return []
+    return await res.json()
+  } catch {
+    return []
+  }
+}
+
+export async function postReply(messageId: string, content: string): Promise<any | null> {
+  try {
+    const res = await fetch(`/api/messages/${messageId}/replies`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ content })
+    })
+    
+    if (!res.ok) return null
+    return await res.json()
+  } catch {
     return null
   }
 }

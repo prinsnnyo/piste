@@ -40,11 +40,7 @@ export default function FreedomWall() {
 
   // Load initial messages
   useEffect(() => {
-    console.log('[page] Initial load - fetching messages at', center)
-    fetchMessages(center[0], center[1], 10000).then((msgs) => {
-      console.log('[page] Initial load - received', msgs.length, 'messages:', msgs)
-      setMessages(msgs)
-    })
+    fetchMessages(center[0], center[1], 10000).then(setMessages)
   }, [])
 
 
@@ -63,11 +59,7 @@ export default function FreedomWall() {
   const handleMapMove = useCallback((mapCenter: LatLngTuple, radius: number) => {
     // Use minimum radius of 10km to ensure markers stay visible when zoomed out
     const fetchRadius = Math.max(radius, 10000)
-    console.log('[page] Map moved - fetching messages at', mapCenter, 'radius:', fetchRadius)
-    fetchMessages(mapCenter[0], mapCenter[1], fetchRadius).then((msgs) => {
-      console.log('[page] Map move - received', msgs.length, 'messages')
-      setMessages(msgs)
-    })
+    fetchMessages(mapCenter[0], mapCenter[1], fetchRadius).then(setMessages)
   }, [])
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -76,7 +68,6 @@ export default function FreedomWall() {
 
     setIsSubmitting(true)
     const created = await postMessage(newMessage, center[0], center[1])
-    console.debug('[page] postMessage created:', created)
 
     if (created) {
       // Immediately add the created message to UI for instant feedback
@@ -99,6 +90,7 @@ export default function FreedomWall() {
         Messages loaded: {messages.length}
       </div>
       
+
       <MapView
         center={center}
         messages={messages}

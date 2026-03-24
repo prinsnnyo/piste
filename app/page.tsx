@@ -6,7 +6,7 @@ export default function LandingPage() {
     <main className="min-h-screen relative flex items-center justify-center px-4 overflow-hidden">
       {/* Background Image */}
       <Image
-        src="/landingpageBG.jpg"
+        src="/assets/landingpageBG.jpg"
         alt="Background"
         fill
         className="object-cover z-0"

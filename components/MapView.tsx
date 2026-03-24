@@ -36,7 +36,7 @@ export function MapView({
   onMapMove,
 }: MapViewProps) {
   return (
-    <div className="relative w-full h-screen">
+    <div className="relative w-full h-screen bg-transparent">
       <MapContainer
         key="freedom-wall-map"
         center={center}
@@ -45,6 +45,7 @@ export function MapView({
         minZoom={6}
         maxZoom={18}
         className="w-full h-screen"
+        attributionControl={false}
       >
         <TileLayer
           attribution='&copy; <a href="https://carto.com/">CARTO</a>'
