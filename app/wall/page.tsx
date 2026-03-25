@@ -89,12 +89,6 @@ export default function FreedomWall() {
     <main className="min-h-screen app-bg">
       <PageHeader />
       
-      {/* Debug info */}
-      <div className="fixed top-25 left-4 z-[2000] bg-black/80 text-white p-2 rounded text-xs">
-        Messages loaded: {messages.length}
-      </div>
-      
-
       <MapView
         center={center}
         messages={messages}
@@ -112,7 +106,6 @@ export default function FreedomWall() {
           setNewMessage('')
           setSubmitError(null)
         }}
-        onClose={() => { setShowForm(false); setSubmitError(null) }}
         onSubmit={handleSubmit}
         isSubmitting={isSubmitting}
         error={submitError}
