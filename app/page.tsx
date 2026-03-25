@@ -15,9 +15,20 @@ export default function LandingPage() {
 
       {/* Content */}
       <div className="relative z-20 max-w-4xl mx-auto text-center">
+        {/* Icon */}
+        <div className="flex justify-center mb-6">
+          <Image
+            src="/assets/icon.png"
+            alt="Usad icon"
+            width={80}
+            height={80}
+            className="rounded-2xl shadow-2xl"
+          />
+        </div>
+
         {/* Brand Title */}
         <h1 className="text-6xl md:text-7xl font-bold mb-8 brand-gradient-text">
-          The Unsaid Thoughts
+          Usad
         </h1>
 
         {/* Quote */}

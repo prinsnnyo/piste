@@ -60,7 +60,7 @@ export default function AuthPage() {
   }
 
   return (
-    <main className="min-h-screen relative flex items-center justify-center px-4 overflow-hidden">
+    <main className="min-h-screen relative flex items-center justify-center px-4 py-12 overflow-hidden">
       {/* Background */}
       <Image
         src="/assets/landingpageBG.jpg"
