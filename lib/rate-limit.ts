@@ -25,7 +25,14 @@ setInterval(() => {
   }
 }, CLEANUP_INTERVAL_MS)
 
-export function checkRateLimit(ip: string): {
+/**
+ * Check rate limit for a given key.
+ * Pass a namespaced key to keep limits separate per endpoint:
+ *   checkRateLimit(`${ip}:post-message`)
+ *   checkRateLimit(`${ip}:listen`)
+ *   checkRateLimit(`${ip}:reply`)
+ */
+export function checkRateLimit(key: string): {
   allowed: boolean
   remaining: number
   retryAfterMs?: number
@@ -33,7 +40,7 @@ export function checkRateLimit(ip: string): {
   const now = Date.now()
   const cutoff = now - WINDOW_MS
 
-  const timestamps = (requestLog.get(ip) || []).filter((t) => t > cutoff)
+  const timestamps = (requestLog.get(key) || []).filter((t) => t > cutoff)
 
   if (timestamps.length >= MAX_REQUESTS) {
     const oldestInWindow = timestamps[0]
@@ -42,7 +49,7 @@ export function checkRateLimit(ip: string): {
   }
 
   timestamps.push(now)
-  requestLog.set(ip, timestamps)
+  requestLog.set(key, timestamps)
 
   return { allowed: true, remaining: MAX_REQUESTS - timestamps.length }
 }
