@@ -46,9 +46,17 @@ export default function FreedomWall() {
     fetchMessages(INITIAL_CENTER[0], INITIAL_CENTER[1], 10000).then(setMessages)
   }, [])
 
+
+  // Map click: move center and open form
   const handleLocationClick = useCallback((position: LatLngTuple) => {
     setCenter(position)
     setShowForm(true)
+  }, [])
+
+  // Search: only move center
+  const handleLocationSearch = useCallback((position: LatLngTuple) => {
+    setCenter(position)
+    // Do NOT open form
   }, [])
 
   const handleMapMove = useCallback((mapCenter: LatLngTuple, radius: number) => {
@@ -80,11 +88,18 @@ export default function FreedomWall() {
   return (
     <main className="min-h-screen app-bg">
       <PageHeader />
+      
+      {/* Debug info */}
+      <div className="fixed top-25 left-4 z-[2000] bg-black/80 text-white p-2 rounded text-xs">
+        Messages loaded: {messages.length}
+      </div>
+      
 
       <MapView
         center={center}
         messages={messages}
         onLocationClick={handleLocationClick}
+        onLocationSearch={handleLocationSearch}
         onMapMove={handleMapMove}
       />
 

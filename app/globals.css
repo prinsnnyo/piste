@@ -1,3 +1,21 @@
+/* Custom dark scrollbar styles */
+::-webkit-scrollbar {
+  width: 8px;
+  background: var(--app-bg-mid);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--brand-mid);
+  border-radius: 8px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--brand-end);
+}
+
+::-webkit-scrollbar-corner {
+  background: var(--app-bg-mid);
+}
 @import "tailwindcss";
 
 :root {

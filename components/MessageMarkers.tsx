@@ -1,3 +1,13 @@
+// Delete reply API
+async function deleteReply(messageId: string, replyId: string): Promise<boolean> {
+  try {
+    const res = await fetch(`/api/messages/${messageId}/replies/${replyId}`, { method: 'DELETE' });
+    if (!res.ok) return false;
+    return true;
+  } catch {
+    return false;
+  }
+}
 import { Marker, Popup, CircleMarker } from 'react-leaflet'
 import L from 'leaflet'
 import { MapPin } from 'lucide-react'
@@ -27,6 +37,29 @@ interface MessageMarkersProps {
 }
 
 export function MessageMarkers({ messages: initialMessages }: MessageMarkersProps) {
+    // For tracking which reply is being deleted
+    const [deletingReply, setDeletingReply] = useState<{[key: string]: boolean}>({});
+    // Delete reply handler
+    const handleDeleteReply = async (messageId: string, replyId: string) => {
+      setDeletingReply(prev => ({ ...prev, [replyId]: true }));
+      try {
+        const ok = await deleteReply(messageId, replyId);
+        if (ok) {
+          setMessages(prev => prev.map(m =>
+            m.id === messageId
+              ? { ...m, replies: (m.replies || []).filter(r => r.id !== replyId) }
+              : m
+          ));
+        } else {
+          alert('Failed to delete reply. Please check the network tab for errors.');
+          console.error('Delete reply failed: API returned not ok');
+        }
+      } catch (err) {
+        alert('An error occurred while deleting the reply.');
+        console.error('Delete reply error:', err);
+      }
+      setDeletingReply(prev => ({ ...prev, [replyId]: false }));
+    };
   // We manage local messages state to allow optimistic updates when a user listens
   const [messages, setMessages] = useState<Message[]>(initialMessages)
   const [listenedIds, setListenedIds] = useState<Set<string>>(new Set())
@@ -174,7 +207,7 @@ export function MessageMarkers({ messages: initialMessages }: MessageMarkersProp
               }}
             >
               <Popup className="custom-dark-popup" closeButton={true}>
-                <div className="bg-[#1c1d21] text-gray-200 p-5 rounded-2xl w-[280px] shadow-2xl flex flex-col items-center relative z-50 max-h-[400px]">
+                <div className="bg-[var(--color-background)] text-[var(--color-foreground)] p-5 rounded-2xl w-[280px] shadow-2xl flex flex-col items-center relative z-50 max-h-[400px] border border-[var(--brand-mid)]">
 
                   {/* Close Button placed absolutely within the container */}
                   <button
@@ -200,10 +233,28 @@ export function MessageMarkers({ messages: initialMessages }: MessageMarkersProp
 
                     {/* Replies Section */}
                     {msg.replies && msg.replies.length > 0 && (
-                      <div className="w-full mb-4 space-y-1.5 border-t border-gray-700 pt-3 flex flex-col items-start">
+                      <div className="w-full mb-4 space-y-1.5 border-t border-gray-700 pt-3 flex flex-col items-start overflow-y-auto max-h-32">
                         {msg.replies.map(reply => (
-                          <div key={reply.id} className="bg-[#2a2b30] px-3 py-px rounded-lg w-fit max-w-full">
-                            <p className="text-[13px] text-gray-200 leading-snug break-words">{reply.content}</p>
+                          <div
+                            key={reply.id}
+                            className="group bg-[var(--app-bg-mid)] px-3 py-1 rounded-lg w-fit max-w-full relative transition-all duration-200 hover:px-5 hover:py-2 focus-within:px-5 focus-within:py-2 border border-transparent hover:border-[var(--brand-mid)] shadow-sm hover:shadow-lg"
+                          >
+                            <p className="text-[13px] text-[var(--color-foreground)] leading-snug break-words pr-8 transition-colors duration-200 group-hover:text-[var(--brand-end)]">
+                              {reply.content}
+                            </p>
+                            <button
+                              className="absolute right-1 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity duration-150 text-red-400 hover:text-red-600 text-xs font-bold p-1 rounded-full bg-[var(--color-background)] shadow-md border border-[var(--brand-mid)]"
+                              title="Delete reply"
+                              onClick={() => handleDeleteReply(msg.id, reply.id)}
+                              tabIndex={0}
+                              disabled={!!deletingReply[reply.id]}
+                            >
+                              {deletingReply[reply.id] ? (
+                                <svg className="animate-spin" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" opacity=".25"/><path d="M4 12a8 8 0 018-8" stroke="currentColor" strokeWidth="4" strokeLinecap="round"/></svg>
+                              ) : (
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M3 6h18M8 6v12a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2V6m-6 0V4a2 2 0 0 1 2-2h0a2 2 0 0 1 2 2v2" /></svg>
+                              )}
+                            </button>
                           </div>
                         ))}
                       </div>
