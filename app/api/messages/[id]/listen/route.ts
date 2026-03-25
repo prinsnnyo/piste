@@ -13,7 +13,7 @@ export async function POST(
   const forwarded = request.headers.get('x-forwarded-for')
   const ip = forwarded?.split(',')[0]?.trim() || request.headers.get('x-real-ip') || 'unknown'
 
-  const rateResult = checkRateLimit(ip)
+  const rateResult = checkRateLimit(`${ip}:listen`)
   if (!rateResult.allowed) {
     const retryAfter = Math.ceil((rateResult.retryAfterMs ?? 60_000) / 1000)
     return NextResponse.json(
@@ -25,33 +25,32 @@ export async function POST(
     )
   }
 
-  if (!messageId) {
-    return NextResponse.json({ error: 'Message ID is required' }, { status: 400 })
+  const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+  if (!messageId || !UUID_REGEX.test(messageId)) {
+    return NextResponse.json({ error: 'Invalid message ID' }, { status: 400 })
   }
 
   try {
-    // Increment the listeners_count for the specific message
-    // We use Supabase RPC to safely increment the counter atomically
-    const { error } = await supabase.rpc('increment_listeners', {
-      message_id: messageId
+    const { data, error } = await supabase.rpc('increment_listeners', {
+      message_id: messageId,
+      listener_ip: ip
     })
 
     if (error) {
-      // Fallback if RPC doesn't exist: fetch and update (less safe for concurrency, but works if RPC isn't created yet)
-      console.error('[API Listen] RPC error (fallback to standard update):', error.message)
-      
-      const { data: msgInfo } = await supabase
-        .from('messages')
-        .select('listeners_count')
-        .eq('id', messageId)
-        .single()
-        
-      if (msgInfo) {
-        await supabase
-          .from('messages')
-          .update({ listeners_count: (msgInfo.listeners_count || 0) + 1 })
-          .eq('id', messageId)
-      }
+      console.error('[API Listen] RPC error:', error.message)
+      return NextResponse.json(
+        { error: 'Failed to update listen status' },
+        { status: 500 }
+      )
+    }
+
+    // RPC returns { success: false, reason: 'already_listened' } for duplicates
+    const result = data as { success: boolean; reason?: string }
+    if (!result?.success) {
+      return NextResponse.json(
+        { success: false, alreadyListened: true },
+        { status: 200 }
+      )
     }
 
     return NextResponse.json({ success: true })

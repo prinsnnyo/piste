@@ -1,4 +1,4 @@
-import { Message } from './types'
+import { Message, Reply } from './types'
 
 export async function fetchMessages(
   lat: number,
@@ -57,7 +57,7 @@ export async function listenToMessage(id: string): Promise<boolean> {
   }
 }
 
-export async function fetchReplies(messageId: string): Promise<any[]> {
+export async function fetchReplies(messageId: string): Promise<Reply[]> {
   try {
     const res = await fetch(`/api/messages/${messageId}/replies`)
     if (!res.ok) return []
@@ -67,14 +67,14 @@ export async function fetchReplies(messageId: string): Promise<any[]> {
   }
 }
 
-export async function postReply(messageId: string, content: string): Promise<any | null> {
+export async function postReply(messageId: string, content: string): Promise<Reply | null> {
   try {
     const res = await fetch(`/api/messages/${messageId}/replies`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ content })
     })
-    
+
     if (!res.ok) return null
     return await res.json()
   } catch {

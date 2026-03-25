@@ -8,8 +8,10 @@ export async function GET(
 ) {
   const { id } = await params
   const messageId = id
-  if (!messageId) {
-    return NextResponse.json({ error: 'Message ID is required' }, { status: 400 })
+
+  const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+  if (!messageId || !UUID_REGEX.test(messageId)) {
+    return NextResponse.json({ error: 'Invalid message ID' }, { status: 400 })
   }
 
   const { data, error } = await supabase
@@ -35,12 +37,17 @@ export async function POST(
 ) {
   const { id } = await params
   const messageId = id
-  
+
+  const POST_UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+  if (!messageId || !POST_UUID_REGEX.test(messageId)) {
+    return NextResponse.json({ error: 'Invalid message ID' }, { status: 400 })
+  }
+
   // --- Rate Limiting ---
   const postForwarded = request.headers.get('x-forwarded-for')
   const postIp = postForwarded?.split(',')[0]?.trim() || request.headers.get('x-real-ip') || 'unknown'
 
-  const postRateResult = checkRateLimit(postIp)
+  const postRateResult = checkRateLimit(`${postIp}:reply`)
   if (!postRateResult.allowed) {
     const retryAfter = Math.ceil((postRateResult.retryAfterMs ?? 60_000) / 1000)
     return NextResponse.json(
@@ -50,10 +57,6 @@ export async function POST(
         headers: { 'Retry-After': String(retryAfter) },
       }
     )
-  }
-
-  if (!messageId) {
-    return NextResponse.json({ error: 'Message ID is required' }, { status: 400 })
   }
 
   let body: { content?: string }
