@@ -71,9 +71,13 @@ export function MessageMarkers({ messages: initialMessages }: MessageMarkersProp
       if (stored) {
         try {
           const ids = JSON.parse(stored)
-          setListenedIds(new Set(ids))
-        } catch (e) {
-          console.error("Failed to parse listened_messages", e)
+          if (Array.isArray(ids) && ids.every((i) => typeof i === 'string')) {
+            setListenedIds(new Set(ids))
+          } else {
+            localStorage.removeItem('listened_messages')
+          }
+        } catch {
+          localStorage.removeItem('listened_messages')
         }
       }
     }

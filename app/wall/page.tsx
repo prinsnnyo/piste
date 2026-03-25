@@ -12,12 +12,15 @@ const MapView = dynamic(
   { ssr: false }
 )
 
+const INITIAL_CENTER: LatLngTuple = [8.475, 124.646]
+
 export default function FreedomWall() {
-  const [center, setCenter] = useState<LatLngTuple>([8.475, 124.646]) // Cagayan de Oro
+  const [center, setCenter] = useState<LatLngTuple>(INITIAL_CENTER) // Cagayan de Oro
   const [messages, setMessages] = useState<Message[]>([])
   const [showForm, setShowForm] = useState(false)
   const [newMessage, setNewMessage] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [submitError, setSubmitError] = useState<string | null>(null)
 
   // Leaflet setup - configure icons on client side only
   useEffect(() => {
@@ -40,7 +43,7 @@ export default function FreedomWall() {
 
   // Load initial messages
   useEffect(() => {
-    fetchMessages(center[0], center[1], 10000).then(setMessages)
+    fetchMessages(INITIAL_CENTER[0], INITIAL_CENTER[1], 10000).then(setMessages)
   }, [])
 
 
@@ -67,15 +70,16 @@ export default function FreedomWall() {
     if (!newMessage.trim()) return
 
     setIsSubmitting(true)
+    setSubmitError(null)
     const created = await postMessage(newMessage, center[0], center[1])
 
     if (created) {
-      // Immediately add the created message to UI for instant feedback
       setMessages((prev) => [created, ...prev])
       setNewMessage('')
       setShowForm(false)
-      // Refresh in background to sync server state with larger radius
       fetchMessages(center[0], center[1], 10000).then(setMessages)
+    } else {
+      setSubmitError('Failed to post your message. Please try again.')
     }
 
     setIsSubmitting(false)
@@ -103,9 +107,15 @@ export default function FreedomWall() {
         show={showForm}
         message={newMessage}
         onMessageChange={setNewMessage}
-        onClose={() => setShowForm(false)}
+        onClose={() => {
+          setShowForm(false)
+          setNewMessage('')
+          setSubmitError(null)
+        }}
+        onClose={() => { setShowForm(false); setSubmitError(null) }}
         onSubmit={handleSubmit}
         isSubmitting={isSubmitting}
+        error={submitError}
       />
     </main>
   )

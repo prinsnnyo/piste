@@ -100,6 +100,40 @@ body {
   backdrop-filter: blur(8px);
 }
 
+.modal-surface {
+  background-color: #2a2a2d;
+}
+
+.modal-input-surface {
+  background-color: #464749;
+}
+
+.modal-submit-button {
+  background-color: #494949;
+}
+
+.modal-submit-button:hover {
+  background-color: #616161;
+}
+
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #464749 #464749;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 3px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: #464749;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #464749;
+  border-radius: 9999px;
+}
+
 .card-border {
   border: 1px solid rgba(255,255,255,0.04);
 }

@@ -1,6 +1,8 @@
 import { X } from 'lucide-react'
+import { useRef, useEffect } from 'react'
 
 const MAX_LENGTH = 500
+const MAX_TEXTAREA_HEIGHT = 160
 
 interface MessageFormModalProps {
   show: boolean
@@ -9,6 +11,7 @@ interface MessageFormModalProps {
   onClose: () => void
   onSubmit: (e: React.FormEvent) => void
   isSubmitting: boolean
+  error?: string | null
 }
 
 export function MessageFormModal({
@@ -17,61 +20,91 @@ export function MessageFormModal({
   onMessageChange,
   onClose,
   onSubmit,
-  isSubmitting
+  isSubmitting,
+  error
 }: MessageFormModalProps) {
+  const textareaRef = useRef<HTMLTextAreaElement>(null)
+  
+// Auto-expand textarea as user types
+  useEffect(() => {
+    if (textareaRef.current) {
+      textareaRef.current.style.height = 'auto'
+      const nextHeight = Math.min(textareaRef.current.scrollHeight, MAX_TEXTAREA_HEIGHT)
+      textareaRef.current.style.height = `${nextHeight}px`
+      textareaRef.current.style.overflowY = textareaRef.current.scrollHeight > MAX_TEXTAREA_HEIGHT ? 'auto' : 'hidden'
+    }
+  }, [message])
+
   if (!show) return null
 
   return (
     <>
-      {/* Backdrop */}
+      {/* Darker backdrop */}
       <div
-        className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[1000]"
+        className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[1000] transition-opacity"
         onClick={onClose}
       />
 
-      {/* Modal */}
+      {/* Modal Container */}
       <div className="fixed inset-0 z-[1001] flex items-center justify-center p-4 pointer-events-none">
-        <div className="card-bg border border-white/10 rounded-xl p-6 shadow-xl max-w-md w-full pointer-events-auto">
-          <div className="flex items-start justify-between mb-4">
-            <h2 className="text-xl font-bold text-white">Post anonymously</h2>
-            <button
-              onClick={onClose}
-              className="text-gray-400 hover:text-white transition-colors"
-              aria-label="Close"
-            >
-              <X size={24} />
-            </button>
+        <div className="modal-surface rounded-2xl p-6 shadow-2xl max-w-[340px] w-full pointer-events-auto border border-white/5 relative">
+          
+          {/* Close Button */}
+          <button
+            onClick={onClose}
+            className="absolute top-4 right-4 text-gray-500 hover:text-gray-300 transition-colors"
+            aria-label="Close"
+          >
+            <X size={18} />
+          </button>
+
+          {/* Minimalist Header */}
+          <div className="flex items-center justify-center mb-6 mt-2">
+            <h2 className="text-[11px] text-gray-400 font-bold tracking-[0.2em] uppercase">
+              Post Anonymously
+            </h2>
           </div>
 
-          <form onSubmit={onSubmit}>
-            <textarea
-              className="w-full bg-white/5 border border-white/10 rounded-lg p-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-white/20 resize-none"
-              rows={4}
-              maxLength={MAX_LENGTH}
-              placeholder="What's on your mind?"
-              value={message}
-              onChange={(e) => onMessageChange(e.target.value)}
-              required
-            />
-            <div className="flex justify-end mt-1">
-              <span
-                className={`text-xs ${
-                  message.length >= MAX_LENGTH
-                    ? 'text-red-400'
-                    : message.length >= MAX_LENGTH * 0.9
-                    ? 'text-yellow-400'
-                    : 'text-gray-500'
-                }`}
-              >
-                {message.length} / {MAX_LENGTH}
-              </span>
+          <form onSubmit={onSubmit} className="flex flex-col gap-4">
+            {/* Auto-expanding Input Area */}
+            <div className="relative">
+              <textarea
+                ref={textareaRef}
+                className="w-full modal-input-surface text-gray-200 rounded-xl px-4 pt-4 pb-8 outline-none placeholder-gray-500/40 border border-transparent focus:border-gray-600 transition-colors resize-none font-serif text-base leading-relaxed text-center custom-scrollbar overflow-y-hidden min-h-[56px] max-h-[160px]"
+                rows={1}
+                maxLength={MAX_LENGTH}
+                placeholder="What's on your mind?"
+                value={message}
+                onChange={(e) => onMessageChange(e.target.value)}
+                required
+              />
+
+              {/* Character Count */}
+              <div className="absolute bottom-2 right-3 pointer-events-none">
+                <span
+                  className={`text-[10px] tracking-wider ${
+                    message.length >= MAX_LENGTH
+                      ? 'text-red-300'
+                      : message.length >= MAX_LENGTH * 0.9
+                      ? 'text-amber-300'
+                      : 'text-gray-400'
+                  }`}
+                >
+                  {message.length}/{MAX_LENGTH}
+                </span>
+              </div>
             </div>
+
+            {/* Submit Button */}
+            {error && (
+              <p className="mt-2 text-sm text-red-400">{error}</p>
+            )}
             <button
               type="submit"
               disabled={isSubmitting || message.trim().length === 0}
-              className="brand-button w-full py-3 rounded-lg font-semibold text-white disabled:opacity-50 disabled:cursor-not-allowed mt-3"
+              className="w-full modal-submit-button text-white text-[11px] font-bold py-4 rounded-xl tracking-[0.2em] uppercase shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed mt-2"
             >
-              {isSubmitting ? 'Posting...' : 'Post Message'}
+              {isSubmitting ? '...' : 'POST MESSAGE'}
             </button>
           </form>
         </div>
