@@ -86,7 +86,7 @@ export function LocationSearch({ onLocationSelected }: LocationSearchProps) {
       <div className="relative">
         <div className="absolute left-3 top-1/2 transform -translate-y-1/2 brand-accent">
           <svg
-            className="w-5 h-5"
+            className="w-7 h-5"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
