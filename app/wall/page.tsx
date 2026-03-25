@@ -20,6 +20,7 @@ export default function FreedomWall() {
   const [showForm, setShowForm] = useState(false)
   const [newMessage, setNewMessage] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [submitError, setSubmitError] = useState<string | null>(null)
 
   // Leaflet setup - configure icons on client side only
   useEffect(() => {
@@ -61,15 +62,16 @@ export default function FreedomWall() {
     if (!newMessage.trim()) return
 
     setIsSubmitting(true)
+    setSubmitError(null)
     const created = await postMessage(newMessage, center[0], center[1])
 
     if (created) {
-      // Immediately add the created message to UI for instant feedback
       setMessages((prev) => [created, ...prev])
       setNewMessage('')
       setShowForm(false)
-      // Refresh in background to sync server state with larger radius
       fetchMessages(center[0], center[1], 10000).then(setMessages)
+    } else {
+      setSubmitError('Failed to post your message. Please try again.')
     }
 
     setIsSubmitting(false)
@@ -93,9 +95,11 @@ export default function FreedomWall() {
         onClose={() => {
           setShowForm(false)
           setNewMessage('')
+          setSubmitError(null)
         }}
         onSubmit={handleSubmit}
         isSubmitting={isSubmitting}
+        error={submitError}
       />
     </main>
   )

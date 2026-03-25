@@ -1,3 +1,4 @@
+import type L from 'leaflet'
 import { Message, LatLngTuple } from './types'
 
 /**
