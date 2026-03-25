@@ -45,7 +45,7 @@ export async function POST(request: NextRequest) {
   const forwarded = request.headers.get('x-forwarded-for')
   const ip = forwarded?.split(',')[0]?.trim() || request.headers.get('x-real-ip') || 'unknown'
 
-  const rateResult = checkRateLimit(ip)
+  const rateResult = checkRateLimit(`${ip}:post-message`)
   if (!rateResult.allowed) {
     const retryAfter = Math.ceil((rateResult.retryAfterMs ?? 60_000) / 1000)
     return NextResponse.json(

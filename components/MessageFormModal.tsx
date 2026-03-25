@@ -9,6 +9,7 @@ interface MessageFormModalProps {
   onClose: () => void
   onSubmit: (e: React.FormEvent) => void
   isSubmitting: boolean
+  error?: string | null
 }
 
 export function MessageFormModal({
@@ -17,7 +18,8 @@ export function MessageFormModal({
   onMessageChange,
   onClose,
   onSubmit,
-  isSubmitting
+  isSubmitting,
+  error
 }: MessageFormModalProps) {
   if (!show) return null
 
@@ -66,6 +68,9 @@ export function MessageFormModal({
                 {message.length} / {MAX_LENGTH}
               </span>
             </div>
+            {error && (
+              <p className="mt-2 text-sm text-red-400">{error}</p>
+            )}
             <button
               type="submit"
               disabled={isSubmitting || message.trim().length === 0}
