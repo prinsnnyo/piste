@@ -97,6 +97,7 @@ export default function FreedomWall() {
           setNewMessage('')
           setSubmitError(null)
         }}
+        onClose={() => { setShowForm(false); setSubmitError(null) }}
         onSubmit={handleSubmit}
         isSubmitting={isSubmitting}
         error={submitError}
