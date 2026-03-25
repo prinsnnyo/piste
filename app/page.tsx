@@ -33,12 +33,15 @@ export default function LandingPage() {
         </blockquote>
 
         {/* Call to Action */}
-        <Link
-          href="/wall"
-          className="inline-block brand-button px-12 py-4 rounded-xl font-semibold text-lg text-white shadow-2xl hover:shadow-[#919191]/20 transition-all duration-300 hover:scale-105"
-        >
-          Enter the Wall
-        </Link>
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+         
+          <Link
+            href="/auth"
+            className="inline-block px-12 py-4 rounded-xl font-semibold text-lg text-white border border-white/20 hover:bg-white/10 shadow-2xl transition-all duration-300 hover:scale-105"
+          >
+            Sign In
+          </Link>
+        </div>
 
         {/* Subtitle */}
         <p className="mt-8 muted-text text-sm">
